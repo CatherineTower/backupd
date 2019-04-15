@@ -13,3 +13,6 @@ backup-test-*
 *.o
 *.obj
 *.lst
+
+# Emacs temporary files
+*~
