@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/backup
+backup.so
+backup.dylib
+backup.dll
+backup.a
+backup.lib
+backup-test-*
+*.exe
+*.o
+*.obj
+*.lst
