@@ -1,3 +1,7 @@
+/* TODO: edit most of these to be local imports. The namespace feels
+   suffocating, and I've heard that local imports are faster and take
+   up less size in the finished executable */
+
 private import BackupFile;
 private import std.datetime;
 private import std.stdio;
@@ -108,6 +112,8 @@ public:
                   dayOfWeek, timeOfDay.toISOString, repeatInterval);
   }
 
+  /* TODO: This is verbose as hell, and confusing with all the nested
+     conditionals. Please do something about it */
   void doBackup() {
     foreach(file; dirEntries(inDirectoryRoot, SpanMode.breadth, false)) {
 
@@ -141,6 +147,9 @@ public:
         }
       }
     }
+    this.backupFile.generateEntries(this.inDirectoryRoot);
+    this.backupFile.writeFile(this.outDirectoryRoot ~ "/"
+                              ~ this.backupFile.backupFileListName);
   }
 }
 
