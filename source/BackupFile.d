@@ -7,14 +7,28 @@ private import std.format : format;
 private import std.file;
 private import std.conv : to;
 private import std.path;
+private import std.exception : collectException;
 
 class BackupFile {
 public:
 
   struct FileEntry {
     SysTime modTime;
-    int type;
     enum Type {file, directory};
+    Type type;
+
+    this(SysTime modTime, FileEntry.Type type) {
+      this.modTime = modTime;
+      this.type = type;
+    }
+
+    bool isFile() const @property {
+      return type == Type.file;
+    }
+
+    bool isDir() const @property {
+      return type == Type.directory;
+    }
   }
 
   this() { }
@@ -68,7 +82,7 @@ public:
       default:
         assert(0, "Unknown type");
       }
-      /* This is type%path%timestamp, but that doesn't come across
+      /* This is type % path % timestamp, but that doesn't come across
          very well */
       file.write(format("%s%%%s%%%s\n", fileType, entry.key,
                         entry.value.modTime.stdTime));
@@ -80,7 +94,11 @@ public:
     foreach(file; dir) {
 
       FileEntry tmp;
-      tmp.modTime = file.timeLastModified;
+      auto e = collectException(tmp.modTime = file.timeLastModified);
+      if(e) {
+        stderr.writeln(e.msg);
+        continue;
+      }
 
       if(file.isFile) {
         tmp.type = FileEntry.Type.file;
@@ -99,7 +117,7 @@ private:
 }
 
 unittest {
-  string path = "~/src";
+  string path = "/usr/include";
   path = path.expandTilde.absolutePath;
   auto tmp = new BackupFile;
   try {
