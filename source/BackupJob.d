@@ -3,6 +3,7 @@
    up less size in the finished executable */
 
 private import BackupFile;
+
 private import std.datetime;
 private import std.stdio;
 private import std.path;
@@ -174,6 +175,14 @@ unittest {
 
     writeln("Starting backup test");
     job.doBackup();
+
+    /* Write a simple configuration file */
+    auto configFile
+      = File(BackupJob.backupConfigFileName.expandTilde.absolutePath, "w");
+    scope(exit) {
+      configFile.close();
+    }
+    configFile.write(job.configLine);
 
   } catch(Exception e) {
     writeln("THIS ERROR WAS CAUGHT AT THE END OF THE UNITTEST BLOCK");
