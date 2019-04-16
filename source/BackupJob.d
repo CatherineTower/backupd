@@ -128,6 +128,7 @@ unittest {
     assert(duplicateJob.timeOfDay == job.timeOfDay);
 
   } catch(Exception e) {
+    writeln("THIS ERROR WAS CAUGHT AT THE END OF THE UNITTEST BLOCK");
     writefln("Line %s", e.line);
     writefln("Message: %s", e.msg);
   }
