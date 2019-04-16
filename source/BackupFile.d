@@ -105,12 +105,22 @@ public:
       } else if (file.isDir) {
         tmp.type = FileEntry.Type.directory;
       } else {
-        assert(0, "Unsupported file");
+        assert(0, "Unsupported file: " ~ file.name);
       }
 
       entries[file.name] = tmp;
     }
   }
+
+  auto getEntries() const {
+    return entries.byKeyValue;
+  }
+
+  auto opBinaryRight(string op)(string query)
+    if(op == "in") {
+      return query in entries;
+    }
+
 
 private:
   FileEntry[string] entries;

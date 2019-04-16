@@ -5,6 +5,7 @@ private import std.path;
 private import std.array : split;
 private import std.string : strip;
 private import std.exception;
+private import std.file;
 
 class BackupJob {
 public:
@@ -106,6 +107,41 @@ public:
     return format("%s%%%s%%%s%%%s%%%s\n", inDirectoryRoot, outDirectoryRoot,
                   dayOfWeek, timeOfDay.toISOString, repeatInterval);
   }
+
+  void doBackup() {
+    foreach(file; dirEntries(inDirectoryRoot, SpanMode.breadth, false)) {
+
+      /* Build relative paths */
+      string inPath = file.name.relativePath(this.inDirectoryRoot);
+      string outPath = this.outDirectoryRoot.dup;
+      foreach(subdir; inPath.pathSplitter()) {
+        outPath ~= "/" ~ subdir;
+      }
+
+      auto entry = file.name in this.backupFile;
+      if(entry !is null) {
+        if(file.isDir) {
+          /* Directory exists; do nothing */
+          continue;
+        }
+
+        if(entry.modTime > file.timeLastModified) {
+          copy(file.name, outPath);
+        }
+
+      } else {
+        /* Either a new file or a renamed file */
+        if(file.isDir) {
+          if(!exists(outPath)) {
+            mkdir(outPath);
+            continue;
+          }
+        } else {
+          copy(file.name, outPath);
+        }
+      }
+    }
+  }
 }
 
 unittest {
@@ -126,6 +162,9 @@ unittest {
     assert(duplicateJob.repeatInterval == job.repeatInterval);
     assert(duplicateJob.dayOfWeek == job.dayOfWeek);
     assert(duplicateJob.timeOfDay == job.timeOfDay);
+
+    writeln("Starting backup test");
+    job.doBackup();
 
   } catch(Exception e) {
     writeln("THIS ERROR WAS CAUGHT AT THE END OF THE UNITTEST BLOCK");
