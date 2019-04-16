@@ -173,6 +173,13 @@ unittest {
     assert(duplicateJob.dayOfWeek == job.dayOfWeek);
     assert(duplicateJob.timeOfDay == job.timeOfDay);
 
+    auto job3 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
+                              ~ "%sun%000000%month");
+    auto job4 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
+                              ~ "%sun%053000%day");
+    auto job5 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
+                              ~ "%tue%235959%year");
+
     writeln("Starting backup test");
     job.doBackup();
 
@@ -183,6 +190,10 @@ unittest {
       configFile.close();
     }
     configFile.write(job.configLine);
+    configFile.write(duplicateJob.configLine);
+    configFile.write(job3.configLine);
+    configFile.write(job4.configLine);
+    configFile.write(job5.configLine);
 
   } catch(Exception e) {
     writeln("THIS ERROR WAS CAUGHT AT THE END OF THE UNITTEST BLOCK");
