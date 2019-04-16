@@ -4,6 +4,7 @@ private import std.stdio;
 private import std.path;
 private import std.array : split;
 private import std.string : strip;
+private import std.exception;
 
 class BackupJob {
 public:
@@ -22,10 +23,25 @@ public:
   string outDirectoryRoot;
   string inDirectoryRoot;
 
-  this() {}
+  this() {
+    this.backupFile = new BackupFile;
+  }
 
   this(string configLine) {
     this.parseLine(configLine);
+
+    try {
+      this.backupFile = new BackupFile(this.outDirectoryRoot ~ "/"
+                                       ~ backupFile.backupFileListName);
+    } catch (ErrnoException e) {
+      stderr.writeln(e.msg);
+      /* Backup file list doesn't exist */
+      writeln("Creating file list...");
+      this.backupFile = new BackupFile();
+      this.backupFile.generateEntries(this.inDirectoryRoot);
+      this.backupFile.writeFile(this.outDirectoryRoot ~ "/" ~
+                                backupFile.backupFileListName);
+    }
   }
 
   void parseLine(string configLine) {
