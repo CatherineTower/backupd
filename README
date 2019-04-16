@@ -1,0 +1,27 @@
+============================== BACKUPD ==============================
+
+A simple SyncToy-like backup daemon which reads from configuration
+files and copies changed files at a set interval.
+
+By default, the daemon reads from a configuration file in the home
+directory named ".backupconfig" and creates a job queue from it. It
+then waits in the background until the next specified time and then
+runs the backup.
+
+The guiding mantra throughout development of this application has been
+to prioritize creating a working product over efficiency or
+elegance. The code can -- and will -- be refactored over time to make
+it more readable and more efficient, more flexible and configurable,
+more verbose and stable. But to start out, at least, having a working
+product is the only goal.
+
+The unit tests have been written such that they are specific to my
+machine. They walk the directory of a source tree that I've got in my
+home directory. If you're going to write and test this application,
+please change the paths in the unit tests to work on your machine
+(and, ideally, to point to a directory you can restore if something
+goes wrong).
+
+As of now, the application may be Linux-specific. I don't think I
+relied on any Posix-only D functions, but I'm not making any
+guarantees.
