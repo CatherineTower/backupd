@@ -1,9 +1,6 @@
-module BackupFile;
-
 private import std.stdio;
 private import std.datetime;
 private import std.array : split;
-private import std.format : format;
 private import std.file;
 private import std.conv : to;
 private import std.path;
@@ -11,6 +8,9 @@ private import std.exception : collectException;
 
 class BackupFile {
 public:
+  /* The file list will be stored in the output directory under this
+     name */
+  static string backupFileListName = ".backupfilelist";
 
   struct FileEntry {
     SysTime modTime;
@@ -84,8 +84,8 @@ public:
       }
       /* This is type % path % timestamp, but that doesn't come across
          very well */
-      file.write(format("%s%%%s%%%s\n", fileType, entry.key,
-                        entry.value.modTime.stdTime));
+      file.writef("%s%%%s%%%s\n", fileType, entry.key,
+                  entry.value.modTime.stdTime);
     }
   }
 
