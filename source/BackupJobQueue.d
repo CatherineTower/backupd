@@ -4,7 +4,6 @@ private import BackupFile;
 private import std.path;
 private import std.stdio;
 private import std.datetime;
-private import std.algorithm.sorting;
 
 class BackupJobQueue {
 public:
@@ -16,12 +15,17 @@ public:
     Duration duration;
     ulong index;
 
-    int opCmp(JobDurationWithPos other) {
+    this(Duration duration, ulong index) {
+      this.duration = duration;
+      this.index = index;
+    }
+
+    int opCmp(JobDurationWithPos other) const pure {
       return this.duration < other.duration;
     }
   }
 
-  this(string configFileName) {
+  this(in string configFileName) {
     this.configFileName = configFileName.expandTilde.absolutePath();
 
     auto configFile = File(this.configFileName, "r");
@@ -42,12 +46,10 @@ public:
                   + job.timeOfDay.second);
       seconds -= ((now.hour * 3600) + (now.minute * 60) + now.second);
 
-      JobDurationWithPos tmp;
-      tmp.duration = dur!"seconds"(seconds);
-      tmp.index = i;
-      res ~= tmp;
+      res ~= JobDurationWithPos(dur!"seconds"(seconds), i);
     }
 
+    import std.algorithm.sorting : sort;
     return res.sort();
   }
 }
