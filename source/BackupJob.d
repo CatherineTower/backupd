@@ -21,9 +21,7 @@ public:
   DayOfWeek dayOfWeek;
   TimeOfDay timeOfDay;
 
-  enum RepeatInterval : ubyte {
-    day, week, month, year
-      }
+  enum RepeatInterval : ubyte { day, week, month, year }
 
   RepeatInterval repeatInterval;
   string outDirectoryRoot;
@@ -42,11 +40,12 @@ public:
     } catch (ErrnoException e) {
       stderr.writeln(e.msg);
       /* Backup file list doesn't exist */
-      writeln("Creating file list...");
+      writeln("Performing initial backup...");
       this.backupFile = new BackupFile();
-      this.backupFile.generateEntries(this.inDirectoryRoot);
+      this.backupFile.generateEntries(this.outDirectoryRoot);
       this.backupFile.writeFile(this.outDirectoryRoot ~ "/" ~
                                 backupFile.backupFileListName);
+      this.doBackup();
     }
   }
 
@@ -180,7 +179,7 @@ unittest {
     /* Use this one for testing the daemon */
     auto job5 = new BackupJob(job.configLine);
     job5.dayOfWeek = DayOfWeek.wed;
-    job5.timeOfDay = TimeOfDay(11, 0, 0);
+    job5.timeOfDay = TimeOfDay(14, 7, 0);
 
     /* Collect the jobs into an array, for easier testing */
     BackupJob[] createdJobs;

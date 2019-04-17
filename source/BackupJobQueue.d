@@ -41,16 +41,20 @@ public:
 
   auto getNextJobTime() const {
     JobDurationWithPos[] res;
+    enum int secondsPerWeek = 7 * 24 * 3600;
     SysTime now = Clock.currTime();
 
     foreach(i, job; this.jobs) {
       /* Get the number of seconds until the job should be run */
-      ulong seconds = daysToDayOfWeek(now.dayOfWeek, job.dayOfWeek);
-      seconds = seconds == 0 ? 7 : seconds;
-      seconds *= (24 * 3600);
+      long seconds = daysToDayOfWeek(now.dayOfWeek, job.dayOfWeek) * 24 * 3600;
       seconds += ((job.timeOfDay.hour * 3600) + (job.timeOfDay.minute * 60)
                   + job.timeOfDay.second);
       seconds -= ((now.hour * 3600) + (now.minute * 60) + now.second);
+
+      if(seconds < 0) {
+        seconds += secondsPerWeek;
+      }
+      assert(seconds >= 0);
 
       assert(res.length == i);
       res ~= JobDurationWithPos(dur!"seconds"(seconds), i);
