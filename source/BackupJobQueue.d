@@ -35,6 +35,10 @@ public:
     }
   }
 
+  BackupJob opIndex(size_t index) {
+    return jobs[index];
+  }
+
   auto getNextJobTime() const {
     JobDurationWithPos[] res;
     SysTime now = Clock.currTime();

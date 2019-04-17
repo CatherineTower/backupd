@@ -13,16 +13,14 @@ int main(string[] args) {
 
   auto jobs = new BackupJobQueue("~/.backupconfig");
   while(1) {
-    auto durations = jobs.getQueuedJobTimes();
-    foreach(entry; durations) {
-      Thread.sleep(entry.duration);
+    auto nextJob = jobs.getNextJobTime();
+    Thread.sleep(nextJob.duration);
 
-      /* THIS IS FOR DEBUGGING */
-      writefln("Doing job %s", entry.index);
-      /* TAKE IT OUT LATER */
+    /* THIS IS FOR DEBUGGING */
+    writefln("Doing job %s", nextJob.index);
+    /* TAKE IT OUT LATER */
 
-      jobs.jobs[entry.index].doBackup();
-    }
+    jobs[nextJob.index].doBackup();
   }
 }
 
