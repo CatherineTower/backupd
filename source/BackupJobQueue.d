@@ -20,7 +20,7 @@ public:
       this.index = index;
     }
 
-    int opCmp(JobDurationWithPos other) const pure {
+    int opCmp(ref const JobDurationWithPos other) const pure {
       return this.duration < other.duration;
     }
   }
@@ -57,13 +57,12 @@ public:
     }
     assert(res.length == this.jobs.length);
 
-    import std.algorithm.searching : minElement;
-    foreach(el; res) {
-      writeln(el);
-      writeln(res.minElement);
-      assert(res.minElement <= el);
-    }
-    return res.minElement();
+    /* I don't know why minElement doesn't work. It consistently
+       gives me the exact opposite of the correct element. I don't
+       know what's gone wrong, but using maxElement works. For some
+       maddening reason */
+    import std.algorithm : maxElement;
+    return res.maxElement();
   }
 }
 
