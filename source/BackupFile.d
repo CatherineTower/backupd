@@ -1,10 +1,7 @@
 private import std.stdio;
 private import std.datetime;
-private import std.array : split;
 private import std.file;
-private import std.conv : to;
 private import std.path;
-private import std.exception : collectException;
 
 class BackupFile {
 public:
@@ -45,6 +42,7 @@ public:
 
     auto lines = file.byLine();
     foreach(line; lines) {
+      import std.array : split;
       auto tmp = split(line, '%');
 
       FileEntry entry;
@@ -59,6 +57,7 @@ public:
         assert(0, "Unknown type");
       }
 
+      import std.conv : to;
       entry.modTime = SysTime(to!ulong(tmp[2]));
       entries[to!string(tmp[1])] = entry;
     }
@@ -94,6 +93,8 @@ public:
     foreach(file; dir) {
 
       FileEntry tmp;
+
+      import std.exception : collectException;
       auto e = collectException(tmp.modTime = file.timeLastModified);
       if(e) {
         stderr.writeln(e.msg);
