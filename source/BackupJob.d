@@ -23,7 +23,7 @@ public:
 
   enum RepeatInterval : ubyte {
     day, week, month, year
-  }
+      }
 
   RepeatInterval repeatInterval;
   string outDirectoryRoot;
@@ -177,24 +177,45 @@ unittest {
                               ~ "%sun%000000%month");
     auto job4 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
                               ~ "%sun%053000%day");
+    /* Use this one for testing the daemon */
     auto job5 = new BackupJob(job.configLine);
     job5.dayOfWeek = DayOfWeek.wed;
     job5.timeOfDay = TimeOfDay(11, 0, 0);
 
-    writeln("Starting backup test");
-    job.doBackup();
+    /* Collect the jobs into an array, for easier testing */
+    BackupJob[] createdJobs;
+    createdJobs ~= job;
+    createdJobs ~= duplicateJob;
+    createdJobs ~= job3;
+    createdJobs ~= job4;
+    createdJobs ~= job5;
 
     /* Write a simple configuration file */
     auto configFile
       = File(BackupJob.backupConfigFileName.expandTilde.absolutePath, "w");
-    scope(exit) {
-      configFile.close();
+    foreach(tmp; createdJobs) {
+      configFile.write(tmp.configLine);
     }
-    configFile.write(job.configLine);
-    configFile.write(duplicateJob.configLine);
-    configFile.write(job3.configLine);
-    configFile.write(job4.configLine);
-    configFile.write(job5.configLine);
+    configFile.close();
+
+    /* Read the configuration file */
+    configFile
+      = File(BackupJob.backupConfigFileName.expandTilde.absolutePath, "r");
+    BackupJob[] readJobs;
+    foreach(line; configFile.byLine) {
+      readJobs ~= new BackupJob(line.idup);
+    }
+
+    /* Make sure they're the same as what was written */
+    foreach(i, tmp; readJobs) {
+      assert(readJobs[i].configLine == createdJobs[i].configLine);
+      assert(readJobs[i].inDirectoryRoot == createdJobs[i].inDirectoryRoot);
+      assert(readJobs[i].outDirectoryRoot == createdJobs[i].outDirectoryRoot);
+      assert(readJobs[i].repeatInterval == createdJobs[i].repeatInterval);
+      assert(readJobs[i].dayOfWeek == createdJobs[i].dayOfWeek);
+      assert(readJobs[i].timeOfDay == createdJobs[i].timeOfDay);
+    }
+
 
   } catch(Exception e) {
     writeln("THIS ERROR WAS CAUGHT AT THE END OF THE UNITTEST BLOCK");
