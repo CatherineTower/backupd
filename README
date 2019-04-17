@@ -11,8 +11,8 @@ runs the backup.
 The guiding mantra throughout development of this application has been
 to prioritize creating a working product over efficiency or
 elegance. The code can -- and will -- be refactored over time to make
-it more readable and more efficient, more flexible and configurable,
-more verbose and stable. But to start out, at least, having a working
+it more readable and efficient, more flexible and configurable, more
+verbose and stable. But to start out, at least, having a working
 product is the only goal.
 
 The unit tests have been written such that they are specific to my
