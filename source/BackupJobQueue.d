@@ -56,9 +56,6 @@ public:
 
 unittest {
   auto jobs = new BackupJobQueue("~/.backupconfig");
-  foreach(job; jobs.jobs) {
-    write(job.configLine);
-  }
 
   writeln("Next backup: ", jobs.getNextJobTime().duration,
           " job number: ", jobs.getNextJobTime.index);
