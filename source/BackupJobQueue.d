@@ -35,7 +35,7 @@ public:
     }
   }
 
-  auto getQueuedJobTimes() const {
+  auto getNextJobTime() const {
     JobDurationWithPos[] res;
     SysTime now = Clock.currTime();
 
@@ -49,8 +49,8 @@ public:
       res ~= JobDurationWithPos(dur!"seconds"(seconds), i);
     }
 
-    import std.algorithm.sorting : sort;
-    return res.sort();
+    import std.algorithm.searching : minElement;
+    return res.minElement();
   }
 }
 
@@ -60,7 +60,6 @@ unittest {
     write(job.configLine);
   }
 
-  foreach(duration; jobs.getQueuedJobTimes) {
-    writeln(duration.duration);
-  }
+  writeln("Next backup: ", jobs.getNextJobTime().duration,
+          " job number: ", jobs.getNextJobTime.index);
 }
