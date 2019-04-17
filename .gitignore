@@ -16,3 +16,11 @@ backup-test-*
 
 # Emacs temporary files
 *~
+
+# Binary executables
+backupd
+BackupUnitTest
+
+# Files created by unit tests
+testFile
+outFile
