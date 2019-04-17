@@ -1,9 +1,0 @@
-{
-	"authors": [
-		"Catherine Tower"
-	],
-	"copyright": "Copyright © 2019, Catherine Tower",
-	"description": "A SyncToy-like backup daemon",
-	"license": "GPL3",
-	"name": "backup"
-}
