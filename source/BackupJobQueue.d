@@ -15,12 +15,12 @@ public:
     Duration duration;
     ulong index;
 
-    this(Duration duration, ulong index) {
+    this(const Duration duration, ulong index) {
       this.duration = duration;
       this.index = index;
     }
 
-    int opCmp(ref const JobDurationWithPos other) const pure {
+    int opCmp(const ref JobDurationWithPos other) const pure {
       return this.duration < other.duration;
     }
   }

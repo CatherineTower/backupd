@@ -14,7 +14,7 @@ public:
     enum Type {file, directory};
     Type type;
 
-    this(SysTime modTime, FileEntry.Type type) {
+    this(const ref SysTime modTime, FileEntry.Type type) {
       this.modTime = modTime;
       this.type = type;
     }
@@ -30,11 +30,11 @@ public:
 
   this() { }
 
-  this(string filename) {
+  this(in string filename) {
     this.readFile(filename);
   }
 
-  void readFile(string filename) {
+  void readFile(in string filename) {
     auto file = File(filename, "r");
     scope(exit) {
       file.close();
@@ -63,7 +63,7 @@ public:
     }
   }
 
-  void writeFile(string filename) const {
+  void writeFile(in string filename) const {
     auto file = new File(filename, "w");
     scope(exit) {
       file.close();
@@ -88,7 +88,7 @@ public:
     }
   }
 
-  void generateEntries(string rootDir) {
+  void generateEntries(in string rootDir) {
     auto dir = dirEntries(rootDir, SpanMode.breadth);
     foreach(file; dir) {
 

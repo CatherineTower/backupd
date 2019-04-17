@@ -31,7 +31,7 @@ public:
     this.backupFile = new BackupFile;
   }
 
-  this(string configLine) {
+  this(in string configLine) {
     this.parseLine(configLine);
 
     try {
@@ -49,7 +49,7 @@ public:
     }
   }
 
-  void parseLine(string configLine) {
+  void parseLine(in string configLine) {
     auto args = split(strip(configLine), '%');
     assert(args.length == 5);
 
