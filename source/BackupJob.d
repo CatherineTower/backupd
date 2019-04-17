@@ -177,8 +177,9 @@ unittest {
                               ~ "%sun%000000%month");
     auto job4 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
                               ~ "%sun%053000%day");
-    auto job5 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
-                              ~ "%tue%235959%year");
+    auto job5 = new BackupJob(job.configLine);
+    job5.dayOfWeek = DayOfWeek.wed;
+    job5.timeOfDay = TimeOfDay(11, 0, 0);
 
     writeln("Starting backup test");
     job.doBackup();
