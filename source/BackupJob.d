@@ -2,8 +2,6 @@
    suffocating, and I've heard that local imports are faster and take
    up less size in the finished executable */
 
-private import BackupFile;
-
 private import std.datetime;
 private import std.stdio;
 private import std.path;
@@ -17,7 +15,6 @@ public:
   /* The main configuration file will be located in the home directory
      until further notice */
   static string backupConfigFileName = "~/.backupconfig";
-  BackupFile backupFile;
   DayOfWeek dayOfWeek;
   TimeOfDay timeOfDay;
 
@@ -27,34 +24,18 @@ public:
   string outDirectoryRoot;
   string inDirectoryRoot;
 
-  this() {
-    this.backupFile = new BackupFile;
-  }
+  this() { }
 
   this(in string configLine) {
     this.parseLine(configLine);
-
-    try {
-      this.backupFile = new BackupFile(this.outDirectoryRoot ~ "/"
-                                       ~ backupFile.backupFileListName);
-    } catch (ErrnoException e) {
-      stderr.writeln(e.msg);
-      /* Backup file list doesn't exist */
-      writeln("Performing initial backup...");
-      this.backupFile = new BackupFile();
-      this.backupFile.generateEntries(this.outDirectoryRoot);
-      this.backupFile.writeFile(this.outDirectoryRoot ~ "/" ~
-                                backupFile.backupFileListName);
-      this.doBackup();
-    }
   }
 
   void parseLine(in string configLine) {
     auto args = split(strip(configLine), '%');
     assert(args.length == 5);
 
-    this.inDirectoryRoot = args[0].expandTilde.absolutePath.dup;
-    this.outDirectoryRoot = args[1].expandTilde.absolutePath.dup;
+    this.inDirectoryRoot = args[0].expandTilde.absolutePath.idup;
+    this.outDirectoryRoot = args[1].expandTilde.absolutePath.idup;
 
     /* TODO: There's got to be a better (or more concise) way to do
        this */
@@ -112,44 +93,37 @@ public:
                   dayOfWeek, timeOfDay.toISOString, repeatInterval);
   }
 
-  /* TODO: This is verbose as hell, and confusing with all the nested
-     conditionals. Please do something about it */
   void doBackup() {
-    foreach(file; dirEntries(inDirectoryRoot, SpanMode.breadth, false)) {
+    auto inEntries = generateEntries(inDirectoryRoot);
+    auto outEntries = generateEntries(outDirectoryRoot);
 
-      /* Build relative paths */
-      string inPath = file.name.relativePath(this.inDirectoryRoot);
-      string outPath = this.outDirectoryRoot.dup;
-      foreach(subdir; inPath.pathSplitter()) {
-        outPath ~= "/" ~ subdir;
-      }
-
-      auto entry = file.name in this.backupFile;
-      if(entry !is null) {
-        if(file.isDir) {
-          /* Directory exists; do nothing */
-          continue;
-        }
-
-        if(entry.modTime > file.timeLastModified) {
-          copy(file.name, outPath);
-        }
-
+    foreach(file; inEntries) {
+      string outPath = outDirectoryRoot ~ relativePath(file.name, inDirectoryRoot);
+      auto tmp = file.name in outEntries;
+      if(tmp is null) {
+        file.isDir ? mkdir(outPath) : copy(file.name, outPath);
       } else {
-        /* Either a new file or a renamed file */
-        if(file.isDir) {
-          if(!exists(outPath)) {
-            mkdir(outPath);
-            continue;
-          }
-        } else {
+        if(tmp.timeLastModified > file.timeLastModified) {
           copy(file.name, outPath);
         }
       }
     }
-    this.backupFile.generateEntries(this.inDirectoryRoot);
-    this.backupFile.writeFile(this.outDirectoryRoot ~ "/"
-                              ~ this.backupFile.backupFileListName);
+
+    foreach(file; outEntries) {
+      auto tmp = file in inEntries;
+      if(file is null) {
+        remove(file.name);
+      }
+    }
+  }
+
+private:
+  DirEntry[string] generateEntries(in string path) {
+    DirEntry[string] res;
+    foreach(file; dirEntries(path, SpanMode.breadth, false)) {
+      res[relativePath(file.name, path)] = file;
+    }
+    return res;
   }
 }
 
@@ -160,8 +134,11 @@ unittest {
     job.inDirectoryRoot = "/home/calvin/src/timesheet";
     job.outDirectoryRoot = "/home/calvin/backuptest";
     job.repeatInterval = BackupJob.RepeatInterval.week;
-    job.dayOfWeek = DayOfWeek.wed;
-    job.timeOfDay = TimeOfDay(20, 0, 0);
+    job.dayOfWeek = DayOfWeek.thu;
+    job.timeOfDay = TimeOfDay(10, 0, 0);
+
+    /* Test the backup algorithm */
+    job.doBackup();
 
     /* Test parsing a config string which is output from an existing
        instance */
