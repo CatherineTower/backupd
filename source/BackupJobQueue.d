@@ -71,6 +71,7 @@ public:
 
 unittest {
   auto jobs = new BackupJobQueue("~/.backupconfig");
+  assert(jobs.jobs.length != 0);
 
   writeln("Next backup: ", jobs.getNextJobTime().duration,
           " job number: ", jobs.getNextJobTime.index);
