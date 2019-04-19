@@ -1,6 +1,5 @@
 import BackupJob;
 import BackupJobQueue;
-import BackupFile;
 
 import core.thread;
 import std.stdio;
