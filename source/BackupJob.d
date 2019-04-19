@@ -98,17 +98,33 @@ public:
     auto outEntries = generateEntries(outDirectoryRoot);
 
     foreach(file; inEntries) {
-      string outPath = outDirectoryRoot ~ relativePath(file.name, inDirectoryRoot);
+      if(file.isDir) {
+        continue;
+      }
+
+      string outPath = outDirectoryRoot ~
+        "/" ~ relativePath(file.name, inDirectoryRoot);
+
       auto tmp = file.name in outEntries;
       if(tmp is null) {
-        file.isDir ? mkdir(outPath) : copy(file.name, outPath);
+        /* File doesn't exist */
+        try {
+          /* If the parent directory doesn't exist, this will fail. */
+          file.isDir ? mkdir(outPath) : copy(file.name, outPath);
+        } catch(FileException e) {
+          /* So make the parent directory and try copying again */
+          mkdirRecurse(dirName(outPath));
+          copy(file.name, outPath);
+        }
       } else {
+        /* Only copy a file that's been modified */
         if(tmp.timeLastModified > file.timeLastModified) {
           copy(file.name, outPath);
         }
       }
     }
 
+    /* Remove all files no longer in the source directory */
     foreach(file; outEntries) {
       auto tmp = file in inEntries;
       if(file is null) {
