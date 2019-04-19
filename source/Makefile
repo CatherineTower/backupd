@@ -15,4 +15,4 @@ test: $(TEST_SOURCES)
 
 .PHONY:clean
 clean:
-	rm -rf BackupUnitTest backupd outFile testFile *.o
+	rm -rf BackupUnitTest backupd *.o
