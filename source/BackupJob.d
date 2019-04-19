@@ -5,8 +5,6 @@
 private import std.datetime;
 private import std.stdio;
 private import std.path;
-private import std.array : split;
-private import std.string : strip;
 private import std.exception;
 private import std.file;
 
@@ -31,6 +29,8 @@ public:
   }
 
   void parseLine(in string configLine) {
+    import std.array : split;
+    import std.string : strip;
     auto args = split(strip(configLine), '%');
     assert(args.length == 5);
 
