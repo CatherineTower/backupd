@@ -15,11 +15,11 @@ int main(string[] args) {
     auto nextJob = jobs.getNextJobTime();
     Thread.sleep(nextJob.duration);
 
-    /* THIS IS FOR DEBUGGING */
-    writefln("Doing job %s", nextJob.index);
-    /* TAKE IT OUT LATER */
-
     jobs[nextJob.index].doBackup();
+    /* In the event that there's nothing to back up and it's a small
+       directory tree, it will run the job multiple times. This is to
+       prevent such redundancy */
+    Thread.sleep(1);
   }
 }
 
