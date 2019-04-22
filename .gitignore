@@ -24,3 +24,6 @@ BackupUnitTest
 # Files created by unit tests
 testFile
 outFile
+
+# DMD code coverage report file
+*.lst
