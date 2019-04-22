@@ -124,25 +124,13 @@ public:
       }
     }
 
-    /* Remove all files no longer in the source directory. This is
-       done in two passes, one for files and one for directories;
-       directories have to be removed after all of their files are
-       removed */
-    foreach(file; outEntries) {
-      if(file.isDir) {
-        continue;
-      }
-      auto tmp = file in inEntries;
-      if(tmp is null) {
-        remove(file.name);
-      }
-    }
-
-    foreach(file; outEntries) {
-      if(!file.isDir) {
-        continue;
-      }
-      auto tmp = file in inEntries;
+    /* Remove files no longer in the source directory. I don't like
+       this approach because it requires getting information from the
+       filesystem again instead of using an in-memory data structure,
+       but this requires a depth-first post-order traversal to avoid
+       trying to delete directories that aren't empty. */
+    foreach(file; dirEntries(outDirectoryRoot, SpanMode.depth, false)) {
+      auto tmp = relativePath(file.name, outDirectoryRoot) in inEntries;
       if(tmp is null) {
         remove(file.name);
       }
