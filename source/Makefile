@@ -4,7 +4,7 @@ SOURCES = backupd.d BackupJob.d BackupJobQueue.d
 DFLAGS = -de -w
 
 TEST_SOURCES =  BackupJob.d BackupJobQueue.d
-TEST_DFLAGS = -de -w -main -unittest -cov
+TEST_DFLAGS = -de -w -main -unittest -cov -profile
 
 daemon: $(SOURCES)
 	$(DC) $(DFLAGS) -of=backupd $(SOURCES)
@@ -15,4 +15,4 @@ test: $(TEST_SOURCES)
 
 .PHONY:clean
 clean:
-	rm -rf BackupUnitTest backupd *.o *.lst
+	rm -rf BackupUnitTest backupd *.o *.lst trace.def trace.log

@@ -27,3 +27,7 @@ outFile
 
 # DMD code coverage report file
 *.lst
+
+# DMD profile build files
+trace.log
+trace.def
