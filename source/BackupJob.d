@@ -124,11 +124,9 @@ public:
       }
     }
 
-    /* Remove files no longer in the source directory. I don't like
-       this approach because it requires getting information from the
-       filesystem again instead of using an in-memory data structure,
-       but this requires a depth-first post-order traversal to avoid
-       trying to delete directories that aren't empty. */
+    /* I tested this with an in-memory data structure instead of
+    re-reading from disk, and there was no appreciable speedup; most
+    of the spent here likely comes from the creation and deletion of files */
     foreach(file; dirEntries(outDirectoryRoot, SpanMode.depth, false)) {
       auto tmp = relativePath(file.name, outDirectoryRoot) in inEntries;
       if(tmp is null) {
