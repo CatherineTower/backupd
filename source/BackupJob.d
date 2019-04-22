@@ -124,10 +124,26 @@ public:
       }
     }
 
-    /* Remove all files no longer in the source directory */
+    /* Remove all files no longer in the source directory. This is
+       done in two passes, one for files and one for directories;
+       directories have to be removed after all of their files are
+       removed */
     foreach(file; outEntries) {
+      if(file.isDir) {
+        continue;
+      }
       auto tmp = file in inEntries;
-      if(file is null) {
+      if(tmp is null) {
+        remove(file.name);
+      }
+    }
+
+    foreach(file; outEntries) {
+      if(!file.isDir) {
+        continue;
+      }
+      auto tmp = file in inEntries;
+      if(tmp is null) {
         remove(file.name);
       }
     }
@@ -154,6 +170,8 @@ unittest {
     job.timeOfDay = TimeOfDay(10, 0, 0);
 
     /* Test the backup algorithm */
+    job.doBackup();
+    /* Test to make sure avoiding copying unchanged files works */
     job.doBackup();
 
     /* Test parsing a config string which is output from an existing
@@ -208,6 +226,14 @@ unittest {
       assert(readJobs[i].timeOfDay == createdJobs[i].timeOfDay);
     }
 
+    /* Test that the backup algorithm will properly handle files that
+       aren't in the destination directory. At the end of this test,
+       the destination directory shouldn't contain any files from the
+       original source directory */
+    auto replacementJob = new BackupJob();
+    replacementJob.inDirectoryRoot = "/home/calvin/src/emacs";
+    replacementJob.outDirectoryRoot = "/home/calvin/backuptest/";
+    replacementJob.doBackup();
 
   } catch(Exception e) {
     writeln("THIS ERROR WAS CAUGHT AT THE END OF THE UNITTEST BLOCK");
