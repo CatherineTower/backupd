@@ -1,7 +1,7 @@
 DC = dmd
 
 SOURCES = backupd.d BackupJob.d BackupJobQueue.d
-DFLAGS = -de -w
+DFLAGS = -de -w -release -O
 
 TEST_SOURCES =  BackupJob.d BackupJobQueue.d
 TEST_DFLAGS = -de -w -main -unittest -cov -profile
