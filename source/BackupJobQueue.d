@@ -67,6 +67,16 @@ public:
     import std.algorithm : maxElement;
     return res.maxElement();
   }
+
+  override string toString() const {
+    import std.format : format;
+    string res;
+    foreach(job; this.jobs) {
+      res ~= format("%s %s, repeating every %s\n", job.timeOfDay, job.dayOfWeek,
+                    job.repeatInterval);
+    }
+    return res;
+  }
 }
 
 unittest {

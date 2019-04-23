@@ -19,12 +19,20 @@ int main(string[] args) {
     /* In the event that there's nothing to back up and it's a small
        directory tree, it will run the job multiple times. This is to
        prevent such redundancy */
-    Thread.sleep(1);
+    Thread.sleep(dur!"seconds"(1));
   }
 }
 
 void parseArguments(string[] args) {
+  foreach(arg; args) {
+    if(arg == "-l" || arg == "--list") {
+      auto jobs = new BackupJobQueue(BackupJob.BackupJob.backupConfigFileName);
+      writeln(jobs);
 
+      import core.stdc.stdlib : exit;
+      exit(0);
+    }
+  }
 }
 
 void usage(int status) {
