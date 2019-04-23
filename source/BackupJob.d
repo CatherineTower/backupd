@@ -126,7 +126,7 @@ public:
 
     /* I tested this with an in-memory data structure instead of
     re-reading from disk, and there was no appreciable speedup; most
-    of the spent here likely comes from the creation and deletion of files */
+    of the spent here likely comes from the creation of files */
     foreach(file; dirEntries(outDirectoryRoot, SpanMode.depth, false)) {
       auto tmp = relativePath(file.name, outDirectoryRoot) in inEntries;
       if(tmp is null) {
