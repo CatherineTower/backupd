@@ -135,6 +135,12 @@ public:
     }
   }
 
+  override string toString() const {
+    import std.format : format;
+    return format("%s %s, repeating every %s\n", this.timeOfDay, this.dayOfWeek,
+                  this.repeatInterval);
+  }
+
 private:
   DirEntry[string] generateEntries(in string path) {
     DirEntry[string] res;

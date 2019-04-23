@@ -72,8 +72,7 @@ public:
     import std.format : format;
     string res;
     foreach(job; this.jobs) {
-      res ~= format("%s %s, repeating every %s\n", job.timeOfDay, job.dayOfWeek,
-                    job.repeatInterval);
+      res ~= format("%s", job);
     }
     return res;
   }
