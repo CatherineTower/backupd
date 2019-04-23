@@ -24,15 +24,20 @@ int main(string[] args) {
 }
 
 void parseArguments(string[] args) {
+  if(args.length == 1) {
+    return;
+  }
+
+  import core.stdc.stdlib : exit;
   foreach(arg; args) {
     if(arg == "-l" || arg == "--list") {
       auto jobs = new BackupJobQueue(BackupJob.BackupJob.backupConfigFileName);
       writeln(jobs);
-
-      import core.stdc.stdlib : exit;
       exit(0);
     }
   }
+  stderr.writeln("Error: no known arguments passed");
+  exit(1);
 }
 
 void usage(int status) {
