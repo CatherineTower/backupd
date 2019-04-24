@@ -31,7 +31,7 @@ public:
   void parseLine(in string configLine) {
     import std.array : split;
     import std.string : strip;
-    auto args = split(strip(configLine), '%');
+    auto args = split(strip(configLine), '\t');
     assert(args.length == 5);
 
     this.inDirectoryRoot = args[0].expandTilde.absolutePath.idup;
@@ -89,7 +89,7 @@ public:
 
   string configLine() const @property {
     import std.format : format;
-    return format("%s%%%s%%%s%%%s%%%s\n", inDirectoryRoot, outDirectoryRoot,
+    return format("%s\t%s\t%s\t%s\t%s\n", inDirectoryRoot, outDirectoryRoot,
                   dayOfWeek, timeOfDay.toISOString, repeatInterval);
   }
 
@@ -175,10 +175,10 @@ unittest {
     assert(duplicateJob.dayOfWeek == job.dayOfWeek);
     assert(duplicateJob.timeOfDay == job.timeOfDay);
 
-    auto job3 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
-                              ~ "%sun%000000%month");
-    auto job4 = new BackupJob("/home/calvin/src/timesheet%/home/calvin/backuptest"
-                              ~ "%sun%053000%day");
+    auto job3 = new BackupJob("/home/calvin/src/timesheet\t/home/calvin/backuptest"
+                              ~ "\tsun\t000000\tmonth");
+    auto job4 = new BackupJob("/home/calvin/src/timesheet\t/home/calvin/backuptest"
+                              ~ "\tsun\t053000\tday");
     /* Use this one for testing the daemon */
     auto job5 = new BackupJob(job.configLine);
     job5.dayOfWeek = DayOfWeek.wed;
