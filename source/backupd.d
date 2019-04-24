@@ -8,7 +8,12 @@ enum string programName = "backupd";
 
 int main(string[] args) {
 
-  parseArguments(args);
+  try {
+    parseArguments(args);
+  } catch(Exception e) {
+    stderr.writeln(e.msg);
+    usage(1);
+  }
 
   auto jobs = new BackupJobQueue("~/.backupconfig");
   while(1) {
@@ -34,10 +39,16 @@ void parseArguments(string[] args) {
       auto jobs = new BackupJobQueue(BackupJob.BackupJob.backupConfigFileName);
       writeln(jobs);
       exit(0);
+    } else if(arg == "-h" || arg == "--help") {
+      usage(0);
     }
   }
-  stderr.writeln("Error: no known arguments passed");
-  exit(1);
+  throw new Exception("No known arguments passed");
+}
+
+unittest {
+  import std.exception : assertThrown;
+  assertThrown(parseArguments( ["-f", "-n", "-et" ]));
 }
 
 void usage(int status) {
@@ -45,6 +56,7 @@ void usage(int status) {
   writeln("OPTIONS:");
   writeln(" -n  --new      Create a new backup job");
   writeln(" -l  --list     List existing backup jobs");
+  writeln(" -h  --help     Show this help message");
 
   import core.stdc.stdlib : exit;
   exit(status);
