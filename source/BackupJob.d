@@ -106,21 +106,26 @@ public:
         "/" ~ relativePath(file.name, inDirectoryRoot);
 
       auto tmp = file.name in outEntries;
-      if(tmp is null) {
-        /* File doesn't exist */
-        try {
-          /* If the parent directory doesn't exist, this will fail. */
-          file.isDir ? mkdir(outPath) : copy(file.name, outPath);
-        } catch(FileException e) {
-          /* So make the parent directory and try copying again */
-          mkdirRecurse(dirName(outPath));
-          copy(file.name, outPath);
+      try {
+        if(tmp is null) {
+          /* File doesn't exist */
+          try {
+            /* If the parent directory doesn't exist, this will fail. */
+            file.isDir ? mkdir(outPath) : copy(file.name, outPath);
+          } catch(FileException e) {
+            /* So make the parent directory and try copying again */
+            mkdirRecurse(dirName(outPath));
+            copy(file.name, outPath);
+          }
+        } else {
+          /* Only copy a file that's been modified */
+          if(tmp.timeLastModified > file.timeLastModified) {
+            copy(file.name, outPath);
+          }
         }
-      } else {
-        /* Only copy a file that's been modified */
-        if(tmp.timeLastModified > file.timeLastModified) {
-          copy(file.name, outPath);
-        }
+      } catch(Exception e) {
+        stderr.writeln(e.msg);
+        continue;
       }
     }
 
@@ -128,9 +133,14 @@ public:
     re-reading from disk, and there was no appreciable speedup; most
     of the spent here likely comes from the creation of files */
     foreach(file; dirEntries(outDirectoryRoot, SpanMode.depth, false)) {
-      auto tmp = relativePath(file.name, outDirectoryRoot) in inEntries;
-      if(tmp is null) {
-        remove(file.name);
+      try {
+        auto tmp = relativePath(file.name, outDirectoryRoot) in inEntries;
+        if(tmp is null) {
+          remove(file.name);
+        }
+      } catch(Exception e) {
+        stderr.writeln(e.msg);
+        continue;
       }
     }
   }
